@@ -229,7 +229,7 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
             if (month < 9) {
                 stringBuilder.append("0").append(month + 1).append("-");
             } else {
-                stringBuilder.append(month).append(1).append("-");
+                stringBuilder.append(month + 1).append("-");
             }
             if (day < 10) {
                 stringBuilder.append("0").append(day);
