@@ -16,14 +16,15 @@ import com.andexert.calendarlistview.SimpleMonthAdapter;
 import java.util.Calendar;
 
 public class CalendarFragment extends DialogFragment {
+    DayPickerView mDayPickerView;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        DayPickerView dayPickerView = (DayPickerView) view.findViewById(R.id.pickerView);
-        dayPickerView.setController(new CalendarController());
-        int monthCount = dayPickerView.getAdapter().getItemCount();
-        dayPickerView.smoothScrollToPosition(monthCount);
+        mDayPickerView = (DayPickerView) view.findViewById(R.id.pickerView);
+        mDayPickerView.setController(new CalendarController());
+        int monthCount = mDayPickerView.getAdapter().getItemCount();
+        mDayPickerView.smoothScrollToPosition(monthCount);
         return view;
     }
 
@@ -58,6 +59,7 @@ public class CalendarFragment extends DialogFragment {
         @Override
         public void onDateRangeSelected(SimpleMonthAdapter.SelectedDays<SimpleMonthAdapter.CalendarDay> selectedDays) {
             Log.i("123", "--- " + selectedDays.getFirst().toString() + selectedDays.getLast().toString());
+            mDayPickerView.getSelectedDays().setFirst(mDayPickerView.getSelectedDays().getLast());
         }
     }
 }

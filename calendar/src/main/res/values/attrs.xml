@@ -5,6 +5,7 @@
         <attr name="colorSelectedDayBackground" format="color"/>
         <attr name="colorSelectedDayText" format="color"/>
         <attr name="colorPreviousDay" format="color"/>
+        <attr name="colorNextDay" format="color"/>
         <attr name="colorNormalDay" format="color" />
         <attr name="colorMonthName" format="color" />
         <attr name="colorDayName" format="color" />
@@ -15,6 +16,7 @@
         <attr name="selectedDayRadius" format="dimension" />
         <attr name="calendarHeight" format="dimension" />
         <attr name="enablePreviousDay" format="boolean" />
+        <attr name="enableNextDay" format="boolean" />
         <attr name="currentDaySelected" format="boolean" />
         <attr name="drawRoundRect" format="boolean" />
         <attr name="firstMonth" format="enum">

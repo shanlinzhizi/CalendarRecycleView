@@ -1,5 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -98,7 +99,9 @@
         android:id="@+id/pickerView"
         android:layout_width="match_parent"
         android:layout_height="320dp"
-        android:overScrollMode="never"/>
+        android:overScrollMode="never"
+        app:colorNextDay="#cccccc"
+        app:enableNextDay="false"/>
 
     <TextView
         android:layout_width="match_parent"

@@ -81,6 +81,7 @@ class SimpleMonthView extends View {
     protected int mDayNumColor;
     protected int mMonthTitleBGColor;
     protected int mPreviousDayColor;
+    protected int mNextDayColor;
     protected int mSelectedDaysColor;
     private final StringBuilder mStringBuilder;
     protected boolean mHasToday = false;
@@ -105,6 +106,7 @@ class SimpleMonthView extends View {
     private final Calendar mCalendar;
     private final Calendar mDayLabelCalendar;
     private final Boolean isPrevDayEnabled;
+    private final Boolean isNextDayEnabled;
     private int mNumRows = DEFAULT_NUM_ROWS;
     private DateFormatSymbols mDateFormatSymbols = new DateFormatSymbols();
     private OnDayClickListener mOnDayClickListener;
@@ -123,6 +125,7 @@ class SimpleMonthView extends View {
         mDayTextColor = typedArray.getColor(R.styleable.DayPickerView_colorDayName, resources.getColor(R.color.normal_day));
         mDayNumColor = typedArray.getColor(R.styleable.DayPickerView_colorNormalDay, resources.getColor(R.color.normal_day));
         mPreviousDayColor = typedArray.getColor(R.styleable.DayPickerView_colorPreviousDay, resources.getColor(R.color.normal_day));
+        mNextDayColor = typedArray.getColor(R.styleable.DayPickerView_colorNextDay, resources.getColor(R.color.normal_day));
         mSelectedDaysColor = typedArray.getColor(R.styleable.DayPickerView_colorSelectedDayBackground, resources.getColor(R.color.selected_day_background));
         mMonthTitleBGColor = typedArray.getColor(R.styleable.DayPickerView_colorSelectedDayText, resources.getColor(R.color.selected_day_text));
         mDrawRect = typedArray.getBoolean(R.styleable.DayPickerView_drawRoundRect, false);
@@ -134,6 +137,7 @@ class SimpleMonthView extends View {
         DAY_SELECTED_CIRCLE_SIZE = typedArray.getDimensionPixelSize(R.styleable.DayPickerView_selectedDayRadius, resources.getDimensionPixelOffset(R.dimen.selected_day_radius));
         mRowHeight = ((typedArray.getDimensionPixelSize(R.styleable.DayPickerView_calendarHeight, resources.getDimensionPixelOffset(R.dimen.calendar_height)) - MONTH_HEADER_SIZE) / 6);
         isPrevDayEnabled = typedArray.getBoolean(R.styleable.DayPickerView_enablePreviousDay, true);
+        isNextDayEnabled = typedArray.getBoolean(R.styleable.DayPickerView_enableNextDay, true);
         initView();
     }
 
@@ -165,7 +169,9 @@ class SimpleMonthView extends View {
     }
 
     private void onDayClick(SimpleMonthAdapter.CalendarDay calendarDay) {
-        if (mOnDayClickListener != null && (isPrevDayEnabled || !((calendarDay.month == today.month) && (calendarDay.year == today.year) && calendarDay.day < today.monthDay))) {
+        if (mOnDayClickListener != null
+                && (isPrevDayEnabled || !((calendarDay.month == today.month) && (calendarDay.year == today.year) && calendarDay.day < today.monthDay))
+                && (isNextDayEnabled || !((calendarDay.month == today.month) && (calendarDay.year == today.year) && calendarDay.day >= today.monthDay))) {
             mOnDayClickListener.onDayClick(this, calendarDay);
         }
     }
@@ -176,6 +182,10 @@ class SimpleMonthView extends View {
 
     private boolean prevDay(int monthDay, Time time) {
         return ((mYear < time.year)) || (mYear == time.year && mMonth < time.month) || (mMonth == time.month && monthDay < time.monthDay);
+    }
+
+    private boolean nextDay(int monthDay, Time time) {
+        return ((mYear > time.year)) || (mYear == time.year && mMonth > time.month) || (mMonth == time.month && monthDay >= time.monthDay);
     }
 
     protected void drawMonthNums(Canvas canvas) {
@@ -237,6 +247,10 @@ class SimpleMonthView extends View {
             }
             if (!isPrevDayEnabled && prevDay(day, today) && today.month == mMonth && today.year == mYear) {
                 mMonthNumPaint.setColor(mPreviousDayColor);
+                mMonthNumPaint.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
+            }
+            if (!isNextDayEnabled && nextDay(day, today) && today.month == mMonth && today.year == mYear) {
+                mMonthNumPaint.setColor(mNextDayColor);
                 mMonthNumPaint.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
             }
             canvas.drawText(String.valueOf(day), x, y, mMonthNumPaint);
