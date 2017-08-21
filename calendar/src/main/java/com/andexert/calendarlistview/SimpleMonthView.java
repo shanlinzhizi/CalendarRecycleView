@@ -34,6 +34,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.text.format.DateUtils;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -43,6 +44,10 @@ import java.security.InvalidParameterException;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.HashMap;
+
+import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_AFTER;
+import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_BEFORE;
+import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_TODAY;
 
 class SimpleMonthView extends View {
     public static final String VIEW_PARAMS_HEIGHT = "height";
@@ -106,7 +111,7 @@ class SimpleMonthView extends View {
     private final Calendar mCalendar;
     private final Calendar mDayLabelCalendar;
     private final Boolean isPrevDayEnabled;
-    private final Boolean isNextDayEnabled;
+    private int mNextDayEnabled;
     private int mNumRows = DEFAULT_NUM_ROWS;
     private DateFormatSymbols mDateFormatSymbols = new DateFormatSymbols();
     private OnDayClickListener mOnDayClickListener;
@@ -137,7 +142,7 @@ class SimpleMonthView extends View {
         DAY_SELECTED_CIRCLE_SIZE = typedArray.getDimensionPixelSize(R.styleable.DayPickerView_selectedDayRadius, resources.getDimensionPixelOffset(R.dimen.selected_day_radius));
         mRowHeight = ((typedArray.getDimensionPixelSize(R.styleable.DayPickerView_calendarHeight, resources.getDimensionPixelOffset(R.dimen.calendar_height)) - MONTH_HEADER_SIZE) / 6);
         isPrevDayEnabled = typedArray.getBoolean(R.styleable.DayPickerView_enablePreviousDay, true);
-        isNextDayEnabled = typedArray.getBoolean(R.styleable.DayPickerView_enableNextDay, true);
+        mNextDayEnabled = typedArray.getInt(R.styleable.DayPickerView_enableNextDay, DATE_TARGET_AFTER);
         initView();
     }
 
@@ -169,9 +174,11 @@ class SimpleMonthView extends View {
     }
 
     private void onDayClick(SimpleMonthAdapter.CalendarDay calendarDay) {
+        Log.e("lyd","  onDayClick  "+calendarDay.day + "   "+today.monthDay);
         if (mOnDayClickListener != null
                 && (isPrevDayEnabled || !((calendarDay.month == today.month) && (calendarDay.year == today.year) && calendarDay.day < today.monthDay))
-                && (isNextDayEnabled || !((calendarDay.month == today.month) && (calendarDay.year == today.year) && calendarDay.day >= today.monthDay))) {
+                && (((mNextDayEnabled == DATE_TARGET_AFTER || !((calendarDay.month == today.month) && (calendarDay.year == today.year) && calendarDay.day >= today.monthDay))))
+                ||((mNextDayEnabled == DATE_TARGET_TODAY && !((calendarDay.month == today.month) && (calendarDay.year == today.year) && calendarDay.day > today.monthDay)))) {
             mOnDayClickListener.onDayClick(this, calendarDay);
         }
     }
@@ -186,6 +193,10 @@ class SimpleMonthView extends View {
 
     private boolean nextDay(int monthDay, Time time) {
         return ((mYear > time.year)) || (mYear == time.year && mMonth > time.month) || (mMonth == time.month && monthDay >= time.monthDay);
+    }
+
+    private boolean nowDay(int monthDay, Time time) {
+        return ((mYear > time.year)) || (mYear == time.year && mMonth > time.month) || (mMonth == time.month && monthDay >= time.monthDay + 1);
     }
 
     protected void drawMonthNums(Canvas canvas) {
@@ -249,7 +260,11 @@ class SimpleMonthView extends View {
                 mMonthNumPaint.setColor(mPreviousDayColor);
                 mMonthNumPaint.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
             }
-            if (!isNextDayEnabled && nextDay(day, today) && today.month == mMonth && today.year == mYear) {
+            if (mNextDayEnabled == DATE_TARGET_BEFORE && nextDay(day, today) && today.month == mMonth && today.year == mYear) {
+                mMonthNumPaint.setColor(mNextDayColor);
+                mMonthNumPaint.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
+            }
+            if (mNextDayEnabled == DATE_TARGET_TODAY && nowDay(day, today) && today.month == mMonth && today.year == mYear) {
                 mMonthNumPaint.setColor(mNextDayColor);
                 mMonthNumPaint.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
             }
@@ -400,6 +415,15 @@ class SimpleMonthView extends View {
             mIsPrev = prevDay(day, today);
         }
         mNumRows = calculateNumRows();
+    }
+
+    /**
+     * 设置是否今天可选
+     *
+     * @param nextDayEnabled
+     */
+    public void setNextDayEnabled(int nextDayEnabled) {
+        mNextDayEnabled = nextDayEnabled;
     }
 
     public void setOnDayClickListener(OnDayClickListener onDayClickListener) {

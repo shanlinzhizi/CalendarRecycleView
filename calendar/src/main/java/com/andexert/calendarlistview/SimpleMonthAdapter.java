@@ -48,6 +48,8 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
     private final Integer firstMonth;
     private final Integer lastMonth;
     private int nowYear;
+    //今天是否可选 true可选
+    private int mNextDayEnabled;
 
     public SimpleMonthAdapter(Context context, DatePickerController datePickerController, TypedArray typedArray) {
         this.typedArray = typedArray;
@@ -59,6 +61,7 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
         calendar.add(Calendar.YEAR, mController.getMinYear() - calendar.get(Calendar.YEAR));
         firstMonth = typedArray.getInt(R.styleable.DayPickerView_firstMonth, calendar.get(Calendar.MONTH));
         lastMonth = typedArray.getInt(R.styleable.DayPickerView_lastMonth, (calendar.get(Calendar.MONTH)) % MONTHS_IN_YEAR);
+        mNextDayEnabled = typedArray.getInt(R.styleable.DayPickerView_enableNextDay, DayPickerView.DATE_TARGET_AFTER);
         selectedDays = new SelectedDays<>();
         mContext = context;
         init();
@@ -95,6 +98,7 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
             selectedLastYear = selectedDays.getLast().year;
         }
         v.reuse();
+        v.setNextDayEnabled(mNextDayEnabled);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_BEGIN_YEAR, selectedFirstYear);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_LAST_YEAR, selectedLastYear);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_BEGIN_MONTH, selectedFirstMonth);
@@ -165,6 +169,11 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
         } else
             selectedDays.setFirst(calendarDay);
         notifyDataSetChanged();
+    }
+
+    //设置今天是否可选
+    public void setNextDayEnabled(int nextDayEnabled) {
+        this.mNextDayEnabled = nextDayEnabled;
     }
 
     public static class CalendarDay implements Serializable {
