@@ -122,4 +122,8 @@ public class DayPickerView extends RecyclerView {
     public void setNextDayEnabled(int nextDayEnabled) {
         mAdapter.setNextDayEnabled(nextDayEnabled);
     }
+
+    public void setDateRange(long start, long end){
+        mAdapter.setSelectableTimeRange(start, end);
+    }
 }

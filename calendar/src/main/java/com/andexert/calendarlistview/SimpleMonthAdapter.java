@@ -38,6 +38,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_AFTER;
+import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_BEFORE;
+import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_TODAY;
+
 public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.ViewHolder> implements SimpleMonthView.OnDayClickListener {
     protected static final int MONTHS_IN_YEAR = 12;
     private final TypedArray typedArray;
@@ -51,6 +55,9 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
     //今天是否可选 true可选
     private int mNextDayEnabled;
 
+    private long selectableStartTimeMills;
+    private long selectableEndTimeMills = System.currentTimeMillis();
+
     public SimpleMonthAdapter(Context context, DatePickerController datePickerController, TypedArray typedArray) {
         this.typedArray = typedArray;
         calendar = Calendar.getInstance();
@@ -61,7 +68,7 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
         calendar.add(Calendar.YEAR, mController.getMinYear() - calendar.get(Calendar.YEAR));
         firstMonth = typedArray.getInt(R.styleable.DayPickerView_firstMonth, calendar.get(Calendar.MONTH));
         lastMonth = typedArray.getInt(R.styleable.DayPickerView_lastMonth, (calendar.get(Calendar.MONTH)) % MONTHS_IN_YEAR);
-        mNextDayEnabled = typedArray.getInt(R.styleable.DayPickerView_enableNextDay, DayPickerView.DATE_TARGET_AFTER);
+        mNextDayEnabled = typedArray.getInt(R.styleable.DayPickerView_enableNextDay, DATE_TARGET_AFTER);
         selectedDays = new SelectedDays<>();
         mContext = context;
         init();
@@ -99,6 +106,8 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
         }
         v.reuse();
         v.setNextDayEnabled(mNextDayEnabled);
+        v.setSelectableStartDay(selectableStartTimeMills);
+        v.setSelectableEndDay(selectableEndTimeMills);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_BEGIN_YEAR, selectedFirstYear);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_LAST_YEAR, selectedLastYear);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_BEGIN_MONTH, selectedFirstMonth);
@@ -174,6 +183,21 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
     //设置今天是否可选
     public void setNextDayEnabled(int nextDayEnabled) {
         this.mNextDayEnabled = nextDayEnabled;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        if( nextDayEnabled == DATE_TARGET_TODAY){
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }else if( nextDayEnabled == DATE_TARGET_BEFORE){
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }else if( nextDayEnabled == DATE_TARGET_AFTER){
+            calendar.setTimeInMillis(Long.MAX_VALUE);
+        }
+        selectableEndTimeMills = calendar.getTimeInMillis();
+    }
+
+    public void setSelectableTimeRange(long startTimeMills, long endTimeMills){
+        this.selectableStartTimeMills = startTimeMills;
+        this.selectableEndTimeMills = endTimeMills;
     }
 
     public static class CalendarDay implements Serializable {

@@ -14,6 +14,11 @@ import com.andexert.calendarlistview.DayPickerView;
 import com.andexert.calendarlistview.SimpleMonthAdapter;
 
 import java.util.Calendar;
+import java.util.TimeZone;
+
+import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_AFTER;
+import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_BEFORE;
+import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_TODAY;
 
 public class CalendarFragment extends DialogFragment {
     DayPickerView mDayPickerView;
@@ -26,6 +31,20 @@ public class CalendarFragment extends DialogFragment {
         int monthCount = mDayPickerView.getAdapter().getItemCount();
         mDayPickerView.smoothScrollToPosition(monthCount);
         return view;
+    }
+
+    private void defineSelectTimeRange(){
+        // if want to define selected day range , use this
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getDefault());
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.MONTH, -2);
+        calendar.add(Calendar.DAY_OF_MONTH, -3);
+//        mDayPickerView.setNextDayEnabled(DATE_TARGET_TODAY);
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTimeInMillis(System.currentTimeMillis());
+        calendar2.add(Calendar.DAY_OF_MONTH,0);
+        mDayPickerView.setDateRange(calendar.getTimeInMillis(), calendar2.getTimeInMillis());
     }
 
     class CalendarController implements DatePickerController {
