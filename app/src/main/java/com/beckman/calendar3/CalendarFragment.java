@@ -16,10 +16,6 @@ import com.andexert.calendarlistview.SimpleMonthAdapter;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_AFTER;
-import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_BEFORE;
-import static com.andexert.calendarlistview.DayPickerView.DATE_TARGET_TODAY;
-
 public class CalendarFragment extends DialogFragment {
     DayPickerView mDayPickerView;
     @Override
@@ -28,6 +24,7 @@ public class CalendarFragment extends DialogFragment {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         mDayPickerView = (DayPickerView) view.findViewById(R.id.pickerView);
         mDayPickerView.setController(new CalendarController());
+        defineSelectTimeRange();
         int monthCount = mDayPickerView.getAdapter().getItemCount();
         mDayPickerView.smoothScrollToPosition(monthCount);
         return view;
@@ -38,12 +35,13 @@ public class CalendarFragment extends DialogFragment {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getDefault());
         calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),0,0,0);
         calendar.add(Calendar.MONTH, -2);
         calendar.add(Calendar.DAY_OF_MONTH, -3);
-//        mDayPickerView.setNextDayEnabled(DATE_TARGET_TODAY);
         Calendar calendar2 = Calendar.getInstance();
         calendar2.setTimeInMillis(System.currentTimeMillis());
         calendar2.add(Calendar.DAY_OF_MONTH,0);
+        calendar2.set(calendar2.get(Calendar.YEAR), calendar2.get(Calendar.MONTH), calendar2.get(Calendar.DAY_OF_MONTH),23,59,59);
         mDayPickerView.setDateRange(calendar.getTimeInMillis(), calendar2.getTimeInMillis());
     }
 

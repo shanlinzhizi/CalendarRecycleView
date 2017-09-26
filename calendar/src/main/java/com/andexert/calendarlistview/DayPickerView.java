@@ -32,12 +32,7 @@ import android.util.AttributeSet;
 import com.andexert.calendarlistview.library.R;
 
 public class DayPickerView extends RecyclerView {
-    //所有时间
-    public static final int DATE_TARGET_AFTER = 0;
-    //今天之前，包括今天
-    public static final int DATE_TARGET_TODAY = 1;
-    //今天之前，不包括今天
-    public static final int DATE_TARGET_BEFORE = 2;
+
     protected Context mContext;
     protected SimpleMonthAdapter mAdapter;
     private DatePickerController mController;
@@ -117,10 +112,6 @@ public class DayPickerView extends RecyclerView {
 
     protected TypedArray getTypedArray() {
         return typedArray;
-    }
-
-    public void setNextDayEnabled(int nextDayEnabled) {
-        mAdapter.setNextDayEnabled(nextDayEnabled);
     }
 
     public void setDateRange(long start, long end){
